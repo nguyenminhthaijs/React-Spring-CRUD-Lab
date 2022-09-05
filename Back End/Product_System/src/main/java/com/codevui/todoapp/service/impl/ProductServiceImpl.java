@@ -22,4 +22,16 @@ public class ProductServiceImpl implements ProductService {
     public Product getProductById(int id) {
         return productRepository.findById(id).get();
     }
+
+    @Override
+    public Product updateProduct(Product product) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Product deleteProduct(int id) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

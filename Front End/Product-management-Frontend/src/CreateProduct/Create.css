@@ -1,0 +1,21 @@
+.create-container{
+    display: flex;
+    justify-content: center;
+    
+}
+
+input, .form-control{
+    margin-bottom: 5px;
+}
+.MuiGrid-item{
+    width: 100%;
+}
+.MuiGrid-item label{
+    width: 100%;
+}
+.MuiGrid-item label span{
+    width: 100%;
+}
+.MuiButton-containedPrimary{
+    background-color: #055160 !important;
+}

@@ -8,6 +8,7 @@ class ProductList extends React.Component {
 
     state = {
         listProduct: []
+        
     }
 
     async componentDidMount() {
@@ -16,7 +17,13 @@ class ProductList extends React.Component {
             listProduct: res.data
         })
         console.log(res.data);
+        res = await axios.get('http://localhost:8080/categories');
+        this.setState({
+            listCategory: res.data
+        })
+        console.log(res.data);
     }
+
 
 
     handleUpdateProduct = (item) => {

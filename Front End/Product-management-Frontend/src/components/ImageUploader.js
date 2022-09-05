@@ -1,15 +1,16 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardMedia from "@material-ui/core/CardMedia";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
-import {useDispatch, useSelector} from "react-redux";
-import {makeStyles} from "@material-ui/core/styles";
+import { useDispatch, useSelector } from "react-redux";
+import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
-import {uploadImage} from "../actions/uploadActions";
+import { uploadImage } from "../actions/uploadActions";
+import axios from 'axios';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -91,12 +92,27 @@ const useStyles = makeStyles((theme) => ({
 
 const ImageUploader = (props) => {
 
+
     const classes = useStyles();
     const dispatch = useDispatch();
     const [imagePreview, setImagePreview] = useState(null);
     const [imageData, setImageData] = useState(null);
     const [imageName, setImageName] = useState("");
-    const {image} = useSelector(state => state.upload);
+
+    const [productName, setProductName] = useState("");
+    const [productCategory, setProductCategory] = useState([]);
+    const [productPrice, setProductPrice] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState(0);
+
+    React.useEffect(() => {
+        const url = "http://localhost:8080/categories";
+        fetch(url)
+            .then((response) => response.json())
+            .then((json) => setProductCategory(json))
+            .catch((error) => console.log(error));
+    }, []);
+
+    const { image } = useSelector(state => state.upload);
 
     const handleUploadClick = event => {
         let file = event.target.files[0];
@@ -106,13 +122,30 @@ const ImageUploader = (props) => {
         setImagePreview(URL.createObjectURL(file));
     };
 
-    const uploadImageWithAdditionalData = () => {
-        imageData.append('imageName', imageName);
-        dispatch(uploadImage(imageData));
-    };
+   
 
     const handleChange = event => {
         setImageName(event.target.value)
+    };
+
+    const handleChangeProductName = (event) => {
+        setProductName(event.target.value)
+        console.log(productName);
+    }
+    const handleChangeProductPrice = (event) => {
+        console.log(productPrice);
+        setProductPrice(event.target.value)
+    }
+    const handleChangeProductCategory = (event) => {
+        setSelectedCategory(event.target.value)
+        console.log(event.target.value);
+    }
+
+    const uploadImageWithAdditionalData = () => {
+        imageData.append('name', productName);
+        imageData.append('category', selectedCategory);
+        imageData.append('price', productPrice);
+        dispatch(uploadImage(imageData));
     };
 
     return (
@@ -126,7 +159,7 @@ const ImageUploader = (props) => {
                                 image={
                                     imagePreview !== null ?
                                         imagePreview :
-                                        "https://www.amerikickkansas.com/wp-content/uploads/2017/04/default-image.jpg"}
+                                        ""}
                             />
                         </CardActionArea>
                     </Card>
@@ -141,35 +174,60 @@ const ImageUploader = (props) => {
                         <Button
                             variant="contained"
                             color="primary"
-                            className={classes.imageChangeButton}
+
                             component="span"
                         >
-                            Change Image
+                            Choose Image
                         </Button>
                     </label>
+
                     <TextField
                         fullWidth
-                        label="Image Name"
+                        label="Name"
                         margin="dense"
                         name="name"
                         className={classes.imageName}
-                        onChange={handleChange}
+                        onChange={(event) => handleChangeProductName(event)}
                         required
-                        value={imageName}
                         variant="outlined"
                     />
+                    <TextField
+                        fullWidth
+                        label="Price"
+                        margin="dense"
+                        name="price"
+                        className={classes.imageName}
+                        onChange={(event) => handleChangeProductPrice(event)}
+                        required
+                        variant="outlined"
+                    />
+
+                    
+                    <select value={selectedCategory} className='form-control' name='category' onChange={handleChangeProductCategory}>
+                        <option value={0}>--Category--</option>
+                        {productCategory.map(category => {
+                            return (
+                                <option value={category.id} key={category.id}>{category.name}</option>
+                            )
+
+                        })}
+
+                    </select>
+
+                    <br />
+
+
                     <Button
                         variant="contained"
                         color="primary"
-                        className={classes.imageChangeButton}
+
                         onClick={() => uploadImageWithAdditionalData()}
                     >
-                        Upload Image
+                        Create new product
                     </Button>
-                    <Typography className={classes.finalText}>{image === null ? "Select An Image To Upload" : "Image Uploaded. Saved as " + image}</Typography>
+                    <Typography className={classes.finalText}>{image === null ? "" : "Image Uploaded. Saved as " + image}</Typography>
                 </Grid>
             </Grid>
-            <button className='btn btn-danger'>Click me</button>
         </Container>
     );
 };
